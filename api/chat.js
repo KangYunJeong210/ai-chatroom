@@ -2,7 +2,9 @@
 // Vercel Serverless Function (Node runtime)
 // 필요 패키지: @google/generative-ai
 // env: GEMINI_API_KEY
-
+export const config = {
+  runtime: "nodejs",
+};
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // 모델이 JSON만 뱉도록 강하게 유도 + 혹시 섞이면 배열만 뽑아내는 방어
@@ -110,3 +112,4 @@ export default async function handler(req, res) {
     });
   }
 }
+
