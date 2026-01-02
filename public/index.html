@@ -1,0 +1,104 @@
+<!-- /public/index.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI 단톡 시뮬</title>
+
+  <!-- Pretendard (optional) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/chat.css" />
+</head>
+
+<body>
+  <div class="app" id="app">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn" id="btnMenu" type="button" aria-label="메뉴">
+          <span class="icon" aria-hidden="true">☰</span>
+        </button>
+
+        <div class="room">
+          <div class="room-title">
+            <span class="room-dot" aria-hidden="true"></span>
+            <span id="roomName">AI 단톡방</span>
+          </div>
+          <div class="room-sub" id="roomSub">3명 대화 중</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="pill-btn" id="btnTheme" type="button" aria-label="테마 전환">
+          <span class="pill-icon" aria-hidden="true">🌙</span>
+          <span class="pill-text">Dark</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Side sheet (participants) -->
+    <aside class="sheet" id="sheet" aria-hidden="true">
+      <div class="sheet-panel" role="dialog" aria-label="참여자 목록">
+        <div class="sheet-head">
+          <div class="sheet-title">참여자</div>
+          <button class="icon-btn" id="btnCloseSheet" type="button" aria-label="닫기">
+            <span class="icon" aria-hidden="true">✕</span>
+          </button>
+        </div>
+
+        <div class="members" id="members"></div>
+
+        <div class="sheet-foot">
+          <div class="mini">
+            <div class="mini-label">분위기</div>
+            <div class="mini-value" id="moodText">평온</div>
+          </div>
+          <div class="mini">
+            <div class="mini-label">시간대</div>
+            <div class="mini-value" id="timeText">오전</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-backdrop" id="sheetBackdrop" aria-hidden="true"></div>
+    </aside>
+
+    <!-- Chat -->
+    <main class="chat-wrap">
+      <div class="day-divider" id="dayDivider">
+        <span class="day-pill">오늘</span>
+      </div>
+
+      <section class="chat" id="chat" aria-label="대화 내용"></section>
+
+      <div class="typing-row" id="typingRow" hidden>
+        <div class="avatar sm" id="typingAvatar"></div>
+        <div class="typing-bubble" aria-label="상대가 입력 중">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Composer -->
+    <footer class="composer">
+      <div class="composer-inner">
+      
+
+        <div class="input-wrap">
+          <textarea id="input" rows="1" placeholder="메시지 입력…" aria-label="메시지 입력"></textarea>
+          <div class="hint" id="hint"></div>
+        </div>
+
+        <button class="send-btn" id="btnSend" type="button">전송</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="./js/app.js"></script>
+</body>
+</html>

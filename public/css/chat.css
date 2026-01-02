@@ -1,0 +1,271 @@
+.app{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== TOP BAR ===== */
+.topbar{
+  padding:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  border-bottom:1px solid var(--line);
+}
+
+.topbar-left{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.room{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.room-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:800;
+}
+
+.room-dot{
+  width:10px;
+  height:10px;
+  border-radius:4px;
+  background: linear-gradient(135deg, var(--accent), var(--me));
+}
+
+.room-sub{
+  font-size:12px;
+  color: var(--muted);
+}
+
+/* ===== SIDE SHEET ===== */
+.sheet{
+  position:fixed;
+  inset:0;
+  display:none;
+  z-index:50;
+}
+.sheet.open{ display:block; }
+
+.sheet-panel{
+  position:absolute;
+  right:0;
+  top:0;
+  height:100%;
+  width:min(360px, 90vw);
+  background: var(--panel-solid);
+  border-left:1px solid var(--line);
+  box-shadow: var(--shadow);
+  transform: translateX(100%);
+  transition:.25s ease;
+  display:flex;
+  flex-direction:column;
+}
+.sheet.open .sheet-panel{ transform: translateX(0); }
+
+.sheet-backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.25);
+}
+
+.sheet-head{
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+  font-weight:800;
+}
+
+.members{
+  flex:1;
+  padding:14px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.member{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.05);
+}
+
+.member .name{
+  font-weight:800;
+}
+
+.sheet-foot{
+  padding:14px;
+  border-top:1px solid var(--line);
+  display:flex;
+  gap:10px;
+}
+
+.mini{
+  flex:1;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid var(--line);
+}
+
+/* ===== CHAT ===== */
+.chat-wrap{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.chat{
+  flex:1;
+  padding:14px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+}
+
+.row.me{
+  justify-content:flex-end;
+}
+
+.avatar{
+  width:36px;
+  height:36px;
+  border-radius:14px;
+  background: linear-gradient(135deg, rgba(124,58,237,.3), rgba(37,99,235,.25));
+  display: flex;
+  align-items: center;
+      justify-content: center;
+}
+
+.bubble{
+  max-width:75%;
+  padding:10px 12px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background: var(--bubble);
+}
+
+.row.me .bubble{
+  background: var(--me-bubble);
+}
+
+.name{
+  font-size:12px;
+  font-weight:700;
+  color: var(--muted);
+  margin-bottom:4px;
+  margin-top: 1px;
+}
+
+/* ===== TYPING ===== */
+.typing-row{
+  display:flex;
+  gap:10px;
+  padding:0 14px 10px;
+}
+
+.typing-bubble{
+  width:60px;
+  height:34px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background: var(--bubble);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background: var(--muted);
+  animation: blink 1.2s infinite;
+}
+.dot:nth-child(2){ animation-delay:.2s }
+.dot:nth-child(3){ animation-delay:.4s }
+
+@keyframes blink{
+  0%,100%{ opacity:.3 }
+  50%{ opacity:1 }
+}
+
+/* ===== COMPOSER ===== */
+.composer{
+  border-top:1px solid var(--line);
+  background: var(--panel);
+  padding:10px;
+}
+
+.composer-inner{
+  display:flex;
+  gap:10px;
+}
+
+.input-wrap{
+  flex:1;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:10px;
+  background: rgba(255,255,255,.5);
+}
+
+#input{
+  width:100%;
+  border:none;
+  background:transparent;
+  resize:none;
+  outline:none;
+  color: var(--text);
+}
+
+.send-btn{
+  padding:10px 14px;
+  border-radius:16px;
+  border:none;
+  background: linear-gradient(135deg, var(--accent), var(--me));
+  color:white;
+  font-weight:800;
+}
+
+
+.day-divider{
+  text-align: center;
+  padding: 20px;
+}
+.read{
+  margin-left: 10px;
+}
+.meta-line{
+  font-size: 14px;
+  color: rgb(143, 143, 143);
+}
+.row.system{
+  display: none;
+}
+.text{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
