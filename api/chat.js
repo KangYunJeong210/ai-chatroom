@@ -96,7 +96,18 @@ export default async function handler(req, res) {
 
     const prompt = buildPrompt({ userText, memory, characters });
 
-    const result = await model.generateContent(prompt);
+   const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 25000); // 25초 컷
+
+const result = await model.generateContent({
+  contents: [{ role: "user", parts: [{ text: prompt }] }],
+  generationConfig: {
+    maxOutputTokens: 220,
+    temperature: 0.8,
+  },
+  signal: controller.signal
+}).finally(() => clearTimeout(timeout));
+
     const text = result?.response?.text?.() ?? "";
 
     const jsonArrayText = extractJsonArray(text);
@@ -112,4 +123,5 @@ export default async function handler(req, res) {
     });
   }
 }
+
 
