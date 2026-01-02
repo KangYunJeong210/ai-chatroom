@@ -1,90 +1,52 @@
 // /api/chat.js
-
-export const config = {
-  runtime: "nodejs",
-};
+export const config = { runtime: "nodejs" };
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Vercel Serverless Function (Node runtime)
-// 필요 패키지: @google/generative-ai
-// env: GEMINI_API_KEY
-export const config = {
-  runtime: "nodejs",
-};
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// 모델이 JSON만 뱉도록 강하게 유도 + 혹시 섞이면 배열만 뽑아내는 방어
 function extractJsonArray(text) {
   const raw = String(text || "").trim();
-  // 이미 JSON 배열이면 그대로
-  if (raw.startsWith("[") && raw.endsWith("]")) return raw;
-
-  // 코드펜스 제거
-  const noFence = raw
-    .replace(/```json/gi, "```")
-    .replace(/```/g, "")
-    .trim();
-
-  // 배열 형태만 추출
+  const noFence = raw.replace(/```json/gi, "```").replace(/```/g, "").trim();
   const m = noFence.match(/\[[\s\S]*\]/);
   return m ? m[0].trim() : "[]";
 }
 
 function buildPrompt({ userText, memory, characters }) {
   const charLines = (Array.isArray(characters) ? characters : [])
-    .map((c) => {
-      const id = (c?.id ?? "").trim();
-      const name = (c?.name ?? "").trim();
-      const style = (c?.style ?? "").trim();
-      return `- ${id}: ${name} / 말투: ${style}`;
-    })
-    .filter(Boolean)
+    .map((c) => `- ${String(c?.id || "").trim()}: ${String(c?.name || "").trim()} / 말투: ${String(c?.style || "").trim()}`)
     .join("\n");
 
-  const safeMemory = String(memory || "")
-    .split("\n")
-    .slice(-20) // 너무 길면 비용↑, 최근만
-    .join("\n");
+  const safeMemory = String(memory || "").split("\n").slice(-30).join("\n");
 
   return `
 너는 "AI 단톡방 시뮬레이터"다. 엔딩 없이 일상 대화를 계속한다.
 
-# 절대 규칙(중요)
-- 이번 턴에는 1~3명만 말한다.
-- 각 메시지는 1~2문장. 너무 길게 금지.
-- 캐릭터 말투/성격을 유지한다.
-- 서로 자연스럽게 이어받는다(단톡 느낌).
-- 과도한 질문 폭탄 금지(질문은 최대 1명만).
-- 공격적/혐오/위험한 내용은 피하고, 일상 대화로 부드럽게 전환한다.
+규칙:
+- 이번 턴에는 1~2명만 말한다.
+- 각 메시지는 1~2문장. 짧게.
+- 말투/성격 유지. 서로 자연스럽게 이어받기.
+- 출력은 반드시 JSON 배열만. 다른 텍스트 금지.
 
-# 출력 형식(반드시 지켜)
-오직 JSON 배열만 출력한다. 다른 텍스트/설명/코드펜스 금지.
-예:
+형식:
 [
   {"speaker":"mina","text":"..."},
   {"speaker":"juno","text":"..."}
 ]
 
-# 캐릭터
-${charLines || "- (캐릭터 정보 없음)"}
+캐릭터:
+${charLines || "- 없음"}
 
-# 최근 대화(요약/로그)
+기억:
 ${safeMemory || "없음"}
 
-# 유저 메시지
+유저:
 ${String(userText || "").trim()}
 `.trim();
 }
 
 export default async function handler(req, res) {
-  // CORS(필요 시)
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST") return res.status(405).json({ ok: false, error: "Method not allowed" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ ok: false, error: "Method not allowed" });
+  }
 
   try {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -96,40 +58,25 @@ export default async function handler(req, res) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-
-    // 빠르고 저렴한 모델 추천(대화용): gemini-1.5-flash
-    // 필요하면 gemini-1.5-pro로 바꿔도 됨.
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    // 서버 타임아웃 방어(25초)
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 25000);
 
     const prompt = buildPrompt({ userText, memory, characters });
 
-   const controller = new AbortController();
-const timeout = setTimeout(() => controller.abort(), 25000); // 25초 컷
-
-const result = await model.generateContent({
-  contents: [{ role: "user", parts: [{ text: prompt }] }],
-  generationConfig: {
-    maxOutputTokens: 220,
-    temperature: 0.8,
-  },
-  signal: controller.signal
-}).finally(() => clearTimeout(timeout));
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 220, temperature: 0.8 },
+      signal: controller.signal,
+    }).finally(() => clearTimeout(t));
 
     const text = result?.response?.text?.() ?? "";
-
     const jsonArrayText = extractJsonArray(text);
 
-    return res.status(200).json({
-      ok: true,
-      data: jsonArrayText, // 프론트에서 JSON.parse(data.data)
-    });
+    return res.status(200).json({ ok: true, data: jsonArrayText });
   } catch (err) {
-    return res.status(500).json({
-      ok: false,
-      error: err?.message || String(err),
-    });
+    return res.status(500).json({ ok: false, error: err?.message || String(err) });
   }
 }
-
-
-
