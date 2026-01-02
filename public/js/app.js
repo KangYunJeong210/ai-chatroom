@@ -46,11 +46,11 @@ const state = {
 
   // 단기 기억(최근 대화 N줄)
   shortLines: [],
-  shortLimit: 16,
+  shortLimit: 6,
 
   // 장기 기억(요약된 사실/취향/관계)
   longLines: [],
-  longLimit: 10,
+  longLimit: 8,
 
   // 로컬에 채팅 로그도 저장(새로고침해도 계속)
   chatLog: [], // [{who,text,at,read,type}]
@@ -572,3 +572,4 @@ if (state.chatLog.length) {
 autoGrowTextarea();
 input.focus();
 resetIdle();
+
