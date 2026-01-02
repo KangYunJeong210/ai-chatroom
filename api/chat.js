@@ -1,4 +1,11 @@
 // /api/chat.js
+
+export const config = {
+  runtime: "nodejs",
+};
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 // Vercel Serverless Function (Node runtime)
 // 필요 패키지: @google/generative-ai
 // env: GEMINI_API_KEY
@@ -123,5 +130,6 @@ const result = await model.generateContent({
     });
   }
 }
+
 
 
